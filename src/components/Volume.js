@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import api from "../services/api";
 
+import { useHistory } from "react-router";
+
 export default function Volume() {
 
     const [volume, setVolume] = useState();
@@ -9,6 +11,7 @@ export default function Volume() {
     const [artigos, setArtigos] = useState();
     const [artigosLoaded, setArtigosLoaded] = useState(false);
     let { id } = useParams();
+    let history = useHistory();
 
     useEffect(() => {
         api
@@ -42,7 +45,7 @@ export default function Volume() {
                 descricao: {volume.descricaoPt} <br/>
                 edicao: {volume.edicao} <br/>
                 sigla: {volume.sigla} <br/>
-                <a href={'/volume/alterar/' + volume.id}></a>
+                <a href={'/volume/alterar/' + volume.id}>Editar</a>
             </div> 
             : 'Carregando...'}
             <h3>Artigos</h3>
@@ -50,7 +53,8 @@ export default function Volume() {
             <li>
                 Título: {artigo.tituloOriginal} <br/>
                 Resumo: {artigo.resumoOriginal} <br/>
-                <a href={'/artigo/' + artigo.id}>detalhar</a>
+                <a href={'/artigo/' + artigo.id}>detalhar</a><br/>
+                <a href="#" onClick={() => history.goBack()}>Voltar</a>
             </li>) 
             : 'Carregando Artigos...'}
         </>

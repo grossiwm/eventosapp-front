@@ -12,6 +12,9 @@ import Home from "./components/Home";
 import Volume from "./components/Volume";
 import Artigo from "./components/Artigo";
 import Autor from "./components/Autor";
+import AlterarVolume from "./components/AlterarVolume";
+import AlterarArtigo from "./components/AlterarArtigo";
+import AlterarAutor from "./components/AlterarAutor";
 
 export default function App() {
   return (
@@ -36,11 +39,20 @@ export default function App() {
           <Route path="/topics">
             <Topics />
           </Route>
+          <Route path="/volume/alterar/:id">
+            <AlterarVolume />
+          </Route>
           <Route path="/volume/:id">
             <Volume />
           </Route>
+          <Route path="/artigo/alterar/:id">
+            <AlterarArtigo />
+          </Route>
           <Route path="/artigo/:id">
             <Artigo />
+          </Route>
+          <Route path="/autor/alterar/:id">
+            <AlterarAutor />
           </Route>
           <Route path="/autor/:id">
             <Autor />
