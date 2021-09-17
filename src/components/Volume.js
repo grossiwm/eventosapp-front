@@ -49,14 +49,16 @@ export default function Volume() {
             </div> 
             : 'Carregando...'}
             <h3>Artigos</h3>
+            <a href={'/artigo/registrar/' + id}>Adicionar artigo</a>
             {artigosLoaded ? artigos.map(artigo => 
             <li>
                 Título: {artigo.tituloOriginal} <br/>
                 Resumo: {artigo.resumoOriginal} <br/>
-                <a href={'/artigo/' + artigo.id}>detalhar</a><br/>
-                <a href="#" onClick={() => history.goBack()}>Voltar</a>
+                <a href={'/artigo/' + artigo.id + "/" + id}>detalhar</a><br/>
             </li>) 
             : 'Carregando Artigos...'}
+            <br/>
+            <a href="#" onClick={() => history.goBack()}>Voltar</a>
         </>
         );
 

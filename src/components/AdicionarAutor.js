@@ -1,8 +1,8 @@
 import React from "react";
 import api from "../services/api"
-import { withRouter } from "react-router-dom";
+import { withRouter, Redirect } from "react-router-dom";
 
-class AlterarAutor extends React.Component {
+class AdicionarAutor extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
@@ -10,14 +10,14 @@ class AlterarAutor extends React.Component {
         meioNome: '',
         sobreNome: '',
         afiliacao: '',
-        afiliacaoEn: '',
         email: '',
         orcid: '',
-        ordem: undefined,
         pais: '',
         id: undefined,
+        ordem: undefined,
         artigoId: undefined,
-        ordem: undefined
+        redirect: false,
+        volumeId: undefined
       };
   
       this.handleInputChange = this.handleInputChange.bind(this);
@@ -25,19 +25,9 @@ class AlterarAutor extends React.Component {
     }
 
     componentDidMount() {
-        let id = parseInt(this.props.match.params.id);
         let artigoId = parseInt(this.props.match.params.artigoId);
-        this.setState({id, artigoId}); 
-        api
-        .get("/autor/" + id)
-        .then((response) =>{
-            console.log(response.data)
-            this.preencheAutor(response.data);
-            this.setState({loaded: true});
-        })
-        .catch((err) => {
-            console.log("ops! Ocorreu um erro " + err);
-        });
+        let volumeId = parseInt(this.props.match.params.volumeId);
+        this.setState({artigoId, volumeId}); 
     }
 
     handleInputChange(event) {
@@ -49,6 +39,10 @@ class AlterarAutor extends React.Component {
         [name]: value
       });
     }
+
+    redirectToArtigoDono() {
+        return <Redirect to={'/artigo/' + this.state.artigoId + '/' + this.state.volumeId} />
+    }
   
     handleSubmit(event) {
         event.preventDefault();
@@ -58,58 +52,38 @@ class AlterarAutor extends React.Component {
         const primeiroNome = this.state.primeiroNome;
         const meioNome = this.state.meioNome;
         const sobreNome = this.state.sobreNome;
-        const afiliacao = this.state.afiliacao;
         const afiliacaoEn = this.state.afiliacaoEn;
+        const afiliacao = this.state.afiliacao;
         const email = this.state.email;
         const orcid = this.state.orcid;
         const pais = this.state.pais;
+        const ordem = this.state.ordem
         const id = this.state.id;
-        const ordem = this.state.ordem;
         const artigoId = this.state.artigoId;
-
+        
         api
-        .put('/autor/alterar', {
+        .post('/autor/registrar', {
             primeiroNome,
             meioNome,
             sobreNome,
             afiliacao,
-            afiliacaoEn,
             email,
             orcid,
             pais,
             id,
-            ordem,
-            artigoId
+            artigoId,
+            afiliacaoEn,
+            ordem
         })
-        .then((response)=>{
-            console.log(response.data)
-            this.preencheAutor(response.data);
-            this.setState({loaded: true});
+        .then(()=>{
+            this.setState({redirect: true})
         })
     }
-
-    preencheAutor(autor) {
-        console.log(autor)
-        this.setState({
-            primeiroNome: autor.primeiroNome,
-            meioNome: autor.meioNome,
-            sobreNome: autor.sobreNome,
-            afiliacao: autor.afiliacao,
-            afiliacaoEn: autor.afiliacaoEn,
-            email: autor.email,
-            ordem: autor.ordem,
-            orcid: autor.orcid,
-            pais: autor.pais,
-            ordem: autor.ordem,
-            id: autor.id
-        });
-    }
-
 
     render() {
       return (
         <>
-        <h2>Editar Autor</h2>
+        <h2>Adicionar Autor</h2>
         <form onSubmit={this.handleSubmit}>
             <input type="hidden" value={this.state.id} />
           <label>
@@ -195,9 +169,10 @@ class AlterarAutor extends React.Component {
           <br />
           <button type="submit">Salvar</button>
         </form>
+        {this.state.redirect ? this.redirectToArtigoDono() : ''}
         </>
       );
     }
 }
 
-export default withRouter(AlterarAutor);
+export default withRouter(AdicionarAutor);

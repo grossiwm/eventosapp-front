@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import api from "../services/api";
+import { useHistory } from "react-router";
 
 export default function Artigo() {
 
@@ -9,6 +10,8 @@ export default function Artigo() {
     const [loaded, setLoaded] = useState(false);
     const [autoresLoaded, setAutoresLoaded] = useState(false);
     let { id } = useParams();
+    let {volumeId} = useParams();
+    let history = useHistory();
 
     useEffect(() => {
         api
@@ -42,7 +45,7 @@ export default function Artigo() {
                 palavras chave: {artigo.palavrasChaveOriginal} <br/>
                 resumo: {artigo.resumoOriginal} <br/>
                 título: {artigo.tituloOriginal} <br/>
-                <a href={'/artigo/alterar/' + artigo.id}></a>
+                <a href={'/artigo/alterar/' + artigo.id + '/' + volumeId}>Editar</a>
             </div> 
             : 'Carregando...'}
             <h3>Autores</h3>
@@ -53,9 +56,11 @@ export default function Artigo() {
                 E-mail: {autor.email} <br/>
                 ORCID: {autor.orcid} <br/>
                 País: {autor.pais} <br/>
-                <a href={'/autor/' + autor.id}>detalhar</a>
+                <a href={'/autor/' + autor.id + '/' + id}>detalhar</a>
             </li>) 
             : 'Carregando Autores...'}
+            <br/>
+            <a href="#" onClick={() => history.goBack()}>Voltar</a>
         </>
         );
 

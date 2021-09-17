@@ -15,6 +15,9 @@ import Autor from "./components/Autor";
 import AlterarVolume from "./components/AlterarVolume";
 import AlterarArtigo from "./components/AlterarArtigo";
 import AlterarAutor from "./components/AlterarAutor";
+import AdicionarVolume from "./components/AdicionarVolume";
+import AdicionarArtigo from "./components/AdicionarArtigo";
+import AdicionarAutor from "./components/AdicionarAutor";
 
 export default function App() {
   return (
@@ -22,39 +25,36 @@ export default function App() {
       <div>
         <ul>
           <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/about">About</Link>
-          </li>
-          <li>
-            <Link to="/topics">Topics</Link>
+            <Link to="/">Volumes</Link>
           </li>
         </ul>
 
         <Switch>
-          <Route path="/about">
-            <About />
-          </Route>
-          <Route path="/topics">
-            <Topics />
-          </Route>
           <Route path="/volume/alterar/:id">
             <AlterarVolume />
+          </Route>
+          <Route path="/volume/registrar">
+            <AdicionarVolume />
           </Route>
           <Route path="/volume/:id">
             <Volume />
           </Route>
-          <Route path="/artigo/alterar/:id">
+          <Route path="/artigo/registrar/:volumeId">
+            <AdicionarArtigo />
+          </Route>
+          <Route path="/artigo/alterar/:id/:volumeId">
             <AlterarArtigo />
           </Route>
-          <Route path="/artigo/:id">
+          <Route path="/artigo/:id/:volumeId">
             <Artigo />
           </Route>
-          <Route path="/autor/alterar/:id">
+          <Route path="/autor/registrar/:artigoId/:volumeId">
+            <AdicionarAutor />
+          </Route>
+          <Route path="/autor/alterar/:id/:artigoId">
             <AlterarAutor />
           </Route>
-          <Route path="/autor/:id">
+          <Route path="/autor/:id/:artigoId">
             <Autor />
           </Route>
           <Route path="/">

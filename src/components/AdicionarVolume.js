@@ -1,8 +1,8 @@
 import React from "react";
 import api from "../services/api"
-import { withRouter } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
-class AlterarVolume extends React.Component {
+class AdicionarVolume extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
@@ -12,51 +12,12 @@ class AlterarVolume extends React.Component {
         edicao: undefined,
         sigla: '',
         id: undefined,
-        artigos: [],
-        loaded: false,
-        artigosLoaded:false
+        redirect: false
       };
   
       this.handleInputChange = this.handleInputChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
     }
-
-    componentDidMount() {
-        let id = parseInt(this.props.match.params.id);
-        this.setState({id}); 
-        api
-        .get("/volume/" + id)
-        .then((response) =>{
-            this.preencheVolume(response.data);
-            this.setState({loaded: true});
-
-            api
-            .get("/volume/" + id + "/artigos/listar")
-            .then((response) => {
-                this.setState({artigos: response.data, artigosLoaded: true});
-            }).catch((err)=>{
-                console.log("ops! Ocorreu um erro " + err);
-            })
-        })
-        .catch((err) => {
-            console.log("ops! Ocorreu um erro " + err);
-        });
-    }
-
-    removeArtigo(id) {
-      api
-      .delete("/artigo/remover/" + id)
-      .then(()=>{
-        api
-        .get("/volume/" + this.state.id + "/artigos/listar")
-        .then((response) => {
-            this.setState({artigos: response.data, artigosLoaded: true});
-        }).catch((err)=>{
-            console.log("ops! Ocorreu um erro " + err);
-        })
-      })
-      
-  }
 
     handleInputChange(event) {
       const target = event.target;
@@ -71,8 +32,6 @@ class AlterarVolume extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        this.setState({ loaded: false })
-
         const cidade = this.state.cidade;
         const dataInicio = this.state.dataInicio;
         const descricaoPt = this.state.descricaoPt;
@@ -82,7 +41,7 @@ class AlterarVolume extends React.Component {
         const id = this.state.id
 
         api
-        .put('/volume/alterar', {
+        .post('/volume/registrar', {
             cidade ,
             dataInicio,
             descricaoEn,
@@ -91,29 +50,16 @@ class AlterarVolume extends React.Component {
             sigla, 
             id
         })
-        .then((response)=>{
-            this.preencheVolume(response.data);
-            this.setState({loaded: true});
+        .then(()=>{
+            this.setState({redirect: true});
         })
-    }
-
-    preencheVolume(volume) {
-        this.setState({
-            cidade: volume.cidade,
-            dataInicio: volume.dataInicio,
-            descricaoPt: volume.descricaoPt,
-            descricaoEn: volume.descricaoEn,
-            edicao: volume.edicao,
-            sigla: volume.sigla,
-            loaded: true
-        });
     }
 
 
     render() {
       return (
         <>
-        <h2>Editar Volume</h2>
+        <h2>Adicionar Volume</h2>
         <form onSubmit={this.handleSubmit}>
             <input type="hidden" value={this.state.id} />
           <label>
@@ -170,24 +116,14 @@ class AlterarVolume extends React.Component {
               onChange={this.handleInputChange} />
           </label>
           <br />
-          <button type="submit">Salvar</button>
+          <button type="submit">Adicionar</button>
         </form>
-
-        <h3>Artigos</h3>
-        <a href={'/artigo/registrar/' + this.state.id}>Adicionar artigo</a>
-        {this.state.artigosLoaded ? this.state.artigos.map(artigo => 
-        <li key = {artigo.id}>
-            Título: {artigo.tituloOriginal} <br/>
-            Resumo: {artigo.resumoOriginal} <br/>
-            <a href="#" onClick={() => this.removeArtigo(artigo.id)}>remover</a><br/>
-            <a href={'/artigo/alterar/' + artigo.id + '/' + this.state.id}>alterar</a><br/>
-        </li>) 
-        : 'Carregando Artigos...'}
+        {this.state.redirect ? <Redirect to="/home" /> : ''}
         </>
       );
     }
 }
 
-export default withRouter(AlterarVolume);
+export default AdicionarVolume;
 
   

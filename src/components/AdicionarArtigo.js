@@ -1,8 +1,9 @@
 import React from "react";
 import api from "../services/api"
-import { withRouter } from "react-router-dom";
+import { withRouter, Redirect } from "react-router";
 
-class AlterarArtigo extends React.Component {
+
+class AdicionarArtigo extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
@@ -15,11 +16,9 @@ class AlterarArtigo extends React.Component {
         resumoEn: '',
         tituloEn: '',
         tituloOriginal: '',
+        id: undefined,
         volumeId: undefined,
-        autores: [],
-        loaded: false,
-        autoresLoaded: false,
-        id: undefined
+        redirect: false
       };
   
       this.handleInputChange = this.handleInputChange.bind(this);
@@ -27,27 +26,8 @@ class AlterarArtigo extends React.Component {
     }
 
     componentDidMount() {
-        let id = parseInt(this.props.match.params.id);
         let volumeId = parseInt(this.props.match.params.volumeId);
-        this.setState({id, volumeId}); 
-        api
-        .get("/artigo/" + id)
-        .then((response) =>{
-            console.log(response.data)
-            this.preencheArtigo(response.data);
-            this.setState({loaded: true});
-
-            api
-            .get("/artigo/" + id + "/autores")
-            .then((response) => {
-                this.setState({autores: response.data, autoresLoaded: true});
-            }).catch((err)=>{
-                console.log("ops! Ocorreu um erro " + err);
-            })
-        })
-        .catch((err) => {
-            console.log("ops! Ocorreu um erro " + err);
-        });
+        this.setState({volumeId})
     }
 
     handleInputChange(event) {
@@ -63,8 +43,6 @@ class AlterarArtigo extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        this.setState({ loaded: false })
-
         const idioma = this.state.idioma;
         const numeroPaginas = this.state.numeroPaginas;
         const ordem = this.state.ordem;
@@ -74,11 +52,11 @@ class AlterarArtigo extends React.Component {
         const resumoEn = this.state.resumoEn;
         const tituloOriginal = this.state.tituloOriginal;
         const tituloEn = this.state.tituloEn;
-        const id = this.state.id
         const volumeId = this.state.volumeId;
+        const id = this.state.id
 
         api
-        .put('/artigo/alterar', {
+        .post('/artigo/registrar', {
             idioma,
             numeroPaginas,
             palavrasChaveEn,
@@ -91,49 +69,20 @@ class AlterarArtigo extends React.Component {
             resumoOriginal,
             volumeId
         })
-        .then((response)=>{
-            console.log(response.data)
-            this.preencheArtigo(response.data);
-            this.setState({loaded: true});
+        .then(()=>{
+            this.setState({redirect: true})
         })
     }
 
-    preencheArtigo(artigo) {
-        console.log(artigo)
-        this.setState({
-            idioma: artigo.idioma,
-            numeroPaginas: artigo.numeroPaginas,
-            ordem: artigo.ordem,
-            palavrasChaveEn: artigo.palavrasChaveEn,
-            palavrasChaveOriginal: artigo.palavrasChaveOriginal,
-            resumoOriginal: artigo.resumoOriginal,
-            resumoEn: artigo.resumoEn,
-            tituloEn: artigo.tituloEn,
-            tituloOriginal: artigo.tituloOriginal,
-            loaded: true
-        });
-    }
-
-    removeAutor(id) {
-      api
-      .delete("/autor/remover/" + id)
-      .then(()=>{
-        api
-        .get("/artigo/" + this.state.id + "/autores")
-        .then((response) => {
-            this.setState({autores: response.data, autoresLoaded: true});
-        }).catch((err)=>{
-            console.log("ops! Ocorreu um erro " + err);
-        })
-      })
+    redirectToVolumeDono() {
+        return <Redirect to={'/volume/' + this.state.volumeId} />
     }
 
     render() {
       return (
         <>
-        <h2>Editar Artigo</h2>
+        <h2>Adicionar Artigo</h2>
         <form onSubmit={this.handleSubmit}>
-            <input type="hidden" value={this.state.id} />
           <label>
             Idioma:
             <input
@@ -215,24 +164,14 @@ class AlterarArtigo extends React.Component {
               onChange={this.handleInputChange} />
           </label>
           <br />
-          <input type="hidden" value={this.state.volumeId}/>
-          <button type="submit">Salvar</button>
+          <button type="submit">Adicionar</button>
         </form>
-        <h3>Autores</h3>
-        <a href={'/autor/registrar/' + this.state.id + '/' + this.state.volumeId}>Adicionar autor</a>
-        {this.state.autoresLoaded ? this.state.autores.map(autor => 
-        <li key = {autor.id}>
-            Nome: {autor.primeiroNome + ' ' + autor.meioNome + ' ' + autor.sobreNome} <br/>
-            ORCID: {autor.orcid} <br/>
-            <a href="#" onClick={() => this.removeAutor(autor.id)}>remover</a><br/>
-            <a href={'/autor/alterar/' + autor.id + '/' + this.state.id}>alterar</a><br/>
-        </li>) 
-        : 'Carregando Autores...'}
+        {this.state.redirect ? this.redirectToVolumeDono() : ''}
         </>
       );
     }
 }
 
-export default withRouter(AlterarArtigo);
+export default withRouter(AdicionarArtigo);
 
   

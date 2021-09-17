@@ -9,8 +9,16 @@ export default function Home() {
     const removeVolume = (id) =>  {
         api
         .delete("/volume/remover/" + id)
-        .then((response)=>{
-            setVolumes = volumes.filter((volume)=>volume.id !== id);
+        .then(()=>{
+            api
+            .get("/volume/listar")
+            .then((response) =>{
+                setVolumes(response.data);
+                setLoaded(true);
+            })
+            .catch((err) => {
+                console.log("ops! Ocorreu um erro " + err)
+            });
         })
         
     }
@@ -29,15 +37,15 @@ export default function Home() {
 
     return (
         <>
-            <h2>Home</h2>
-            <a href="/volume/registrar">Adicionar Novo Volume</a>
+            <h2>Volumes</h2>
+            <a href="/volume/registrar">Adicionar Novo Volume</a><br/>
             { loaded ? volumes.map(volume => 
             <li key={volume.id}>
-                id: {volume.id} |
-                cidade: {volume.cidade} | 
-                edição: {volume.edicao} | 
-                sigla: {volume.sigla} | 
-                data: {volume.dataInicio} | <a href={'/volume/' + volume.id}>ver</a> | <a href="#" onClick={() => removeVolume(volume.id)}>remover</a>
+                Descrição: {volume.descricaoPt} | 
+                Cidade: {volume.cidade} | 
+                Edição: {volume.edicao} | 
+                Sigla: {volume.sigla} | 
+                Data: {volume.dataInicio} | <a href={'/volume/' + volume.id}>ver</a> | <a href="#" onClick={() => removeVolume(volume.id)}>remover</a>
             </li>) 
             : 'Carregando...'}
         </>

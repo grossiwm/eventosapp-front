@@ -8,6 +8,7 @@ export default function Autor() {
     const [autor, setAutor] = useState();
     const [loaded, setLoaded] = useState(false);
     let { id } = useParams();
+    let {artigoId} = useParams();
     let history = useHistory();
 
     useEffect(() => {
@@ -32,7 +33,7 @@ export default function Autor() {
                 E-mail: {autor.email} <br/>
                 ORCID: {autor.orcid} <br/>
                 País: {autor.pais} <br/>
-                <a href={'/autor/alterar/' + autor.id}>editar</a><br/>
+                <a href={'/autor/alterar/' + autor.id + '/' + artigoId}>editar</a><br/>
                 <a href="#" onClick={() => history.goBack()}>Voltar</a>
             </div> 
             : 'Carregando...'}
